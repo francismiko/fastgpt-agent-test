@@ -1,0 +1,56 @@
+import { Agent } from "@mastra/core";
+import { createTool } from "@mastra/core/tools";
+import { z } from "zod";
+import { claude, qwen } from "../provider";
+
+export const interactivePromptTool = createTool({
+  id: "interactive_prompt",
+  description:
+    "当需要用户提供更多细节或澄清时，请使用此工具。它允许助手提出开放式问题或提供多项选择，然后等待用户的回应后再继续。",
+  inputSchema: z.object({
+    user_query: z.string().describe("用户输入的查询"),
+    mode: z
+      .enum(["input", "single_choice"])
+      .describe("交互模式，input 表示自由输入，single_choice 表示单选"),
+    prompt: z.string().describe("要展示给用户的问题或提示语"),
+    options: z
+      .array(z.string())
+      .optional()
+      .describe("当模式为 single_choice 时，需要提供的可选项列表"),
+  }),
+  outputSchema: z.object({
+    result: z.string().describe("用户交互返回的结果"),
+  }),
+  execute: async ({ context }) => {
+    console.log("Executing interactive prompt tool");
+    const { user_query, mode, prompt, options } = context;
+
+    try {
+      const agent = new Agent({
+        name: "agent",
+        instructions:
+          "由你扮演用户的角色代替用户模拟输出交互结果, 如果是选项, 请只输出选项中的内容, 禁止输出任何其他无关内容",
+        model: claude["sonnet"],
+      });
+
+      const response = await agent.generateVNext([
+        { role: "user", content: [{ type: "text", text: user_query }] },
+        {
+          role: "user",
+          content: [
+            { type: "text", text: JSON.stringify({ mode, prompt, options }) },
+          ],
+        },
+      ]);
+
+      return { result: response.text };
+    } catch (error) {
+      console.error("Error in interactive prompt tool:", error);
+      const errorMessage =
+        error instanceof Error ? error.message : "Unknown error";
+      console.error("Error details:", errorMessage);
+
+      return { result: errorMessage };
+    }
+  },
+});

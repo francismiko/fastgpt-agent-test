@@ -121,7 +121,7 @@ ${systemPrompt ? `<user_required>\n${systemPrompt}\n</user_required>` : ""}
 <process>
 - 解析用户输入，识别任务模式（线性/探索/并行/迭代）
 - 提取核心目标、关键要素、约束与本地化偏好
-- 在缺少完成任务的关键信息时，使用 [ask_agent] 工具来询问用户
+- 在缺少前置的关键信息或用户的问题不明确时，使用 [interactivePromptTool] 工具来询问用户获取必要信息
 ${systemPrompt ? "- 制定本轮计划时，严格参考 <user_required></user_required> 中的内容进行设计，设计的计划不偏离<user_required></user_required>。" : ""}
 - 输出语言风格本地化（根据用户输入语言进行术语与语序调整）。
 - 严格按照 JSON Schema 生成完整计划，不得输出多余内容。
