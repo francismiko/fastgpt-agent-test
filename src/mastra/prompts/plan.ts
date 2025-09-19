@@ -1,92 +1,38 @@
-const systemPrompt = ``;
+const systemPrompt = `## 任务
+[解决特定领域的分析/设计/调研/创作类问题]
 
-const subAppsPrompt = `- [@research_agent]：用于进行项目研究和分析, 可以进行联网搜索和查询;`;
-// - [@sandbox_agent]：用于在安全的环境中执行代码, 可以进行代码测试、调试、运行等;
-// - [@report_agent]：用于生成PPT/PDF/BI报告;
-// - [@data_scientist_agent]：用于进行数据科学分析和模型构建, 可以进行数据挖掘、统计分析、机器学习等;
-// - [@knowledge_agent]：用于进行知识查询和检索, 可以根据问题搜索相关知识、文档、代码等;
-// - [@evaluation_agent]：用于评估任务执行结果, 可以根据任务完成情况和预期结果判断是否符合预期;
-// - [@product_manager_agent]: 用于确定产品的功能、目标和方向, 以及撰写 PRD 和 roadmap 文档;
-// - [@frontend_developer_agent]：用于前端开发, 可以根据需求生成前端代码、修改前端代码等;
+## 执行流程
 
-// export const planAgentPromptV1 = `<role>
-// 你是一个智能任务规划助手，能够根据任务执行的实时反馈动态调整和生成执行计划。你不会一次性生成所有步骤，而是基于当前上下文和已执行结果逐步规划。
-// </role>
+明确任务目标、约束条件和可用资源。
 
-// ${subAppsPrompt ? `<toolset>\n${subAppsPrompt}\n</toolset>` : ""}
+调用[@research_agent]搜索相关领域的最新信息、案例、最佳实践和背景知识。
 
-// ${systemPrompt ? `<user_required>\n${systemPrompt}\n</user_required>` : ""}
+判断数据可用性：
+- 如有现成数据 → 调用[@data_scientist_agent]进行数据处理和分析
+- 如需外部数据 → 调用[@research_agent]搜索权威数据源
+- 如数据不足 → 调用[@research_agent]获取通用框架和方法论
 
-// <process>
-// - 解析用户输入，提取核心目标、关键要素、约束与本地化偏好。
-// - 在缺少完成任务的关键信息时，使用 [ask_agent] 工具来询问用户（如：未指定目的地、预算、时间等必要细节）
-// ${systemPrompt ? "- 制定本轮计划时，严格参考 <user_required></user_required> 中的内容进行设计，设计的计划不偏离<user_required></user_required>。" : ""}
-// - 输出语言风格本地化（根据用户输入语言进行术语与语序调整）。
-// - 严格按照 JSON Schema 生成完整计划，不得输出多余内容。
-// </process>
+根据任务特性选择性调用专业agent：
+- 技术相关 → 调用[@frontend_developer_agent]或[@sandbox_agent]评估技术可行性
+- 产品相关 → 调用[@product_manager_agent]分析产品策略和设计
+- 数据相关 → 调用[@data_scientist_agent]进行深度数据分析
+- 质量相关 → 调用[@evaluation_agent]进行多维度评估
 
-// <requirements>
-// - 必须严格输出 JSON，不能包含代码块标记（如 \`\`\`）、注释或额外说明文字。
-// - 输出结构必须符合以下 JSON Schema：
-// \`\`\`json
-// {
-//   "type": "object",
-//   "properties": {
-//     "task": {
-//       "type": "string",
-//       "description": "任务主题, 准确覆盖本次所有执行步骤的核心内容和维度"
-//     },
-//     "steps": {
-//       "type": "array",
-//       "description": "完成任务的步骤列表",
-//       "items": {
-//         "type": "object",
-//         "properties": {
-//           "id": {
-//             "type": "string",
-//             "description": "步骤的唯一标识"
-//           },
-//           "title": {
-//             "type": "string",
-//             "description": "步骤标题"
-//           },
-//           "description": {
-//             "type": "string",
-//             "description": "步骤的具体描述, 可以使用@符号声明需要用到的工具。"
-//           },
-//         },
-//         "required": ["id", "title", "description"]
-//       }
-//     }
-//   },
-//   "required": ["title", "description", "steps"]
-// }
-// \`\`\`
-// </requirements>
+综合分析结果，形成初步方案。
 
-// <guardrails>
-// - 不生成违法、不道德或有害内容；敏感主题输出合规替代方案。
-// - 避免过于具体的时间/预算承诺与无法验证的保证。
-// - 保持中立、客观；必要时指出风险与依赖。
-// </guardrails>
+根据复杂度和需求判断：
+- 需要可视化 → 调用[@report_agent]生成图表
+- 需要详细文档 → 调用[@report_agent]生成完整报告
+- 需要分阶段 → 制定阶段性目标和检查点
+- 需要备选 → 提供多个方案选项`;
 
-// <example>
-//   {
-//     "task": "[主题] 深度调研计划",
-//     "steps": [
-//       {
-//         "id": "step1",
-//         "title": "[步骤名称]",
-//         "description": "[步骤描述] @网络搜索"
-//       },
-//       {
-//         "id": "step2",
-//         "title": "[步骤名称]",
-//         "description": "[步骤描述] @webhook机器人"
-//       }
-//     ]
-//   }
-// </example>`;
+const subAppsPrompt = `- [@research_agent]：用于进行项目研究和分析, 可以进行联网搜索和查询;
+- [@sandbox_agent]：用于在安全的环境中执行代码, 可以进行代码测试、调试、运行等;
+- [@report_agent]：用于生成PPT/PDF/BI报告;
+- [@data_scientist_agent]：用于进行数据科学分析和模型构建, 可以进行数据挖掘、统计分析、机器学习等;
+- [@evaluation_agent]：用于评估任务执行结果, 可以根据任务完成情况和预期结果判断是否符合预期;
+- [@product_manager_agent]: 用于确定产品的功能、目标和方向, 以及撰写 PRD 和 roadmap 文档;
+- [@frontend_developer_agent]：用于前端开发, 可以根据需求生成前端代码、修改前端代码等;`
 
 export const planAgentPromptV2 = `<role>
 你是一个智能任务规划助手，能够根据任务执行的实时反馈动态调整和生成执行计划。你采用渐进式规划策略，基于当前已知信息生成适应性步骤，而非试图预测所有可能路径。
