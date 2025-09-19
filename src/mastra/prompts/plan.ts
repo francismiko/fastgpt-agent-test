@@ -1,28 +1,13 @@
-// const systemPrompt1 = `## 任务
-// 获取 github 仓库 star 数量。
-
-// ## 步骤
-// 1. 调用[@秘塔搜索]搜索项目信息。
-// 2. 判断搜索结果：
-//    - 如果包含 GitHub 链接 → 调用[@网页内容抓取]获取仓库信息
-//    - 如果不包含 GitHub 链接 → 直接从搜索结果提取 star 数量
-// 3. 对于 GitHub 仓库：
-//    - 判断是否为 fork 仓库
-//    - 如是 fork → 调用[@网页内容抓取] 获取主仓库 star 数
-//    - 如是主仓库 → 直接使用当前仓库 star 数
-// 4. 输出最终 star 数量（仅数字，无需额外说明）`;
-
 const systemPrompt = ``;
 
-const subAppsPrompt = `- [@research_agent]：用于进行项目研究和分析, 可以进行联网搜索和查询;
-- [@sandbox_agent]：用于在安全的环境中执行代码, 可以进行代码测试、调试、运行等;
-- [@report_agent]：用于生成PPT/PDF/BI报告;
-- [@data_scientist_agent]：用于进行数据科学分析和模型构建, 可以进行数据挖掘、统计分析、机器学习等;
-- [@knowledge_agent]：用于进行知识查询和检索, 可以根据问题搜索相关知识、文档、代码等;
-- [@evaluation_agent]：用于评估任务执行结果, 可以根据任务完成情况和预期结果判断是否符合预期;
-- [@product_manager_agent]: 用于确定产品的功能、目标和方向, 以及撰写 PRD 和 roadmap 文档;
-- [@frontend_developer_agent]：用于前端开发, 可以根据需求生成前端代码、修改前端代码等;
-`;
+const subAppsPrompt = `- [@research_agent]：用于进行项目研究和分析, 可以进行联网搜索和查询;`;
+// - [@sandbox_agent]：用于在安全的环境中执行代码, 可以进行代码测试、调试、运行等;
+// - [@report_agent]：用于生成PPT/PDF/BI报告;
+// - [@data_scientist_agent]：用于进行数据科学分析和模型构建, 可以进行数据挖掘、统计分析、机器学习等;
+// - [@knowledge_agent]：用于进行知识查询和检索, 可以根据问题搜索相关知识、文档、代码等;
+// - [@evaluation_agent]：用于评估任务执行结果, 可以根据任务完成情况和预期结果判断是否符合预期;
+// - [@product_manager_agent]: 用于确定产品的功能、目标和方向, 以及撰写 PRD 和 roadmap 文档;
+// - [@frontend_developer_agent]：用于前端开发, 可以根据需求生成前端代码、修改前端代码等;
 
 // export const planAgentPromptV1 = `<role>
 // 你是一个智能任务规划助手，能够根据任务执行的实时反馈动态调整和生成执行计划。你不会一次性生成所有步骤，而是基于当前上下文和已执行结果逐步规划。
@@ -179,6 +164,7 @@ ${systemPrompt ? "- 制定本轮计划时，严格参考 <user_required></user_r
 - 不生成违法、不道德或有害内容；敏感主题输出合规替代方案。
 - 避免过于具体的时间/预算承诺与无法验证的保证。
 - 保持中立、客观；必要时指出风险与依赖。
+- 只输出[interactivePromptTool]的工具调用或 JSON 计划内容, 不能输出其他内容。
 </guardrails>
 
 <best-practices>

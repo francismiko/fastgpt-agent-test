@@ -1,12 +1,12 @@
 import { Agent } from "@mastra/core";
 import { createTool } from "@mastra/core/tools";
 import { z } from "zod";
-import { claude, qwen } from "../provider";
+import { gpt, qwen } from "../provider";
 
 export const interactivePromptTool = createTool({
   id: "interactive_prompt",
   description:
-    "当需要用户提供更多细节或澄清时，请使用此工具。它允许助手提出开放式问题或提供多项选择，然后等待用户的回应后再继续。",
+    "当需要用户提供更多细节或澄清时，请使用此工具。它允许助手提出开放式问题或提供多项选择，然后等待用户的回应后再继续。尽量使用 single_choice 模式, 而不是 input 模式, 因为用户更喜欢从选项中选择而不是自由输入。 可以多次调用此工具, 直到用户提供足够的信息或作出选择。",
   inputSchema: z.object({
     user_query: z.string().describe("用户输入的查询"),
     mode: z
@@ -20,6 +20,7 @@ export const interactivePromptTool = createTool({
   }),
   outputSchema: z.object({
     result: z.string().describe("用户交互返回的结果"),
+    error: z.string().nullable().describe("错误信息，如果有"),
   }),
   execute: async ({ context }) => {
     console.log("Executing interactive prompt tool");
@@ -27,30 +28,25 @@ export const interactivePromptTool = createTool({
 
     try {
       const agent = new Agent({
-        name: "agent",
+        name: "Mock Ask Agent",
         instructions:
           "由你扮演用户的角色代替用户模拟输出交互结果, 如果是选项, 请只输出选项中的内容, 禁止输出任何其他无关内容",
-        model: claude["sonnet"],
+        model: qwen["3-32b"],
       });
 
       const response = await agent.generateVNext([
-        { role: "user", content: [{ type: "text", text: user_query }] },
-        {
-          role: "user",
-          content: [
-            { type: "text", text: JSON.stringify({ mode, prompt, options }) },
-          ],
-        },
+        { role: "user", content: user_query },
+        { role: "user", content: JSON.stringify({ mode, prompt, options }) },
       ]);
 
-      return { result: response.text };
+      return { result: response.text, error: null };
     } catch (error) {
       console.error("Error in interactive prompt tool:", error);
       const errorMessage =
         error instanceof Error ? error.message : "Unknown error";
       console.error("Error details:", errorMessage);
 
-      return { result: errorMessage };
+      return { result: "", error: errorMessage };
     }
   },
 });

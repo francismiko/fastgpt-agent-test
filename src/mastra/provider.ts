@@ -25,6 +25,8 @@ const gpt = {
 };
 const qwen = {
   max: providerCN("qwen-max"),
+  "3-235b-a22b": providerCN("qwen3-235b-a22b"),
+  "3-32b": providerCN("qwen3-32b"),
 };
 const glm = {
   "4.5": providerCN("glm-4.5"),

@@ -1,14 +1,14 @@
 import { Agent } from "@mastra/core/agent";
 import { Memory } from "@mastra/memory";
 import { LibSQLStore } from "@mastra/libsql";
-import { claude, qwen } from "../provider";
+import { glm } from "../provider";
 import { masterAgentPrompt } from "../prompts/master";
 import { researchAgentTool } from "../tools/sub-research";
 
 export const masterAgent = new Agent({
   name: "Master Agent",
   instructions: masterAgentPrompt,
-  model: qwen["max"],
+  model: glm["4.5"],
   tools: { researchAgentTool },
   memory: new Memory({
     storage: new LibSQLStore({
