@@ -1,0 +1,27 @@
+{
+  "task": "对比分析ChatGPT和Claude在编程能力上的差异和优劣势",
+  "steps": [
+    {
+      "id": "step1",
+      "title": "搜索两个AI模型的编程能力基础信息",
+      "description": "使用 @research_agent 搜索ChatGPT和Claude的技术架构、训练数据、编程语言支持范围，了解两者在编程领域的基础能力定位"
+    },
+    {
+      "id": "step2",
+      "title": "调研具体编程场景表现对比",
+      "description": "使用 @research_agent 搜索两个模型在不同编程任务上的表现，包括：代码生成质量、调试能力、算法实现、代码解释、项目架构设计等维度"
+    },
+    {
+      "id": "step3",
+      "title": "分析用户评价和基准测试数据",
+      "description": "使用 @data_scientist_agent 收集和分析相关的基准测试结果、用户反馈数据、编程竞赛表现等客观指标"
+    },
+    {
+      "id": "step4",
+      "title": "查询专业评测和行业报告",
+      "description": "使用 @knowledge_agent 查询技术媒体、研究机构对两个模型编程能力的专业评测报告和对比分析"
+    }
+  ],
+  "requires_replan": true,
+  "replan_reason": "基于初步调研结果需要进一步决策：1) 如果发现明显差异，深入分析具体优势领域；2) 如果各有特色，可能需要进行实际编程测试验证；3) 根据发现的关键差异点，可能需要生成可视化对比图表或撰写详细的产品能力分析报告"
+}
