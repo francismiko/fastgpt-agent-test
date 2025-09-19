@@ -1,7 +1,7 @@
 import { Agent } from "@mastra/core";
 import { createTool } from "@mastra/core/tools";
 import { z } from "zod";
-import { gpt, qwen } from "../provider";
+import { glm, gpt, qwen } from "../provider";
 
 export const interactivePromptTool = createTool({
   id: "interactive_prompt",
@@ -31,15 +31,27 @@ export const interactivePromptTool = createTool({
         name: "Mock Ask Agent",
         instructions:
           "由你扮演用户的角色代替用户模拟输出交互结果, 如果是选项, 请只输出选项中的内容, 禁止输出任何其他无关内容",
-        model: qwen["3-32b"],
+        model: glm["4.5"],
       });
 
-      const response = await agent.generateVNext([
-        { role: "user", content: user_query },
-        { role: "user", content: JSON.stringify({ mode, prompt, options }) },
-      ]);
+      console.log(JSON.stringify({ mode, prompt, options }));
 
-      return { result: response.text, error: null };
+      const stream = await agent.streamVNext(
+        [
+          { role: "user", content: user_query },
+          { role: "user", content: JSON.stringify({ mode, prompt, options }) },
+        ],
+        { modelSettings: { temperature: 0.9 } },
+      );
+
+      for await (const chunk of stream.textStream) {
+        process.stdout.write(chunk);
+      }
+      process.stdout.write("\n");
+
+      const fullOutput = await stream.getFullOutput();
+
+      return { result: fullOutput.text, error: null };
     } catch (error) {
       console.error("Error in interactive prompt tool:", error);
       const errorMessage =

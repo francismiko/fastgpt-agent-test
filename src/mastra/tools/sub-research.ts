@@ -20,12 +20,20 @@ export const researchAgentTool = createTool({
 
       console.log(`Starting research for: "${query}"`);
 
-      const stream = await agent.streamVNext([
-        {
-          role: "user",
-          content: query,
-        },
-      ]);
+      const stream = await agent.streamVNext(
+        [
+          {
+            role: "user",
+            content: query,
+          },
+        ],
+        { modelSettings: { temperature: 0 } },
+      );
+
+      for await (const chunk of stream.textStream) {
+        process.stdout.write(chunk);
+      }
+      process.stdout.write("\n");
 
       const fullOutput = await stream.getFullOutput();
       console.log("Research completed successfully");
