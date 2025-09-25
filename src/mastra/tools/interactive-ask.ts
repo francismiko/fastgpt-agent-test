@@ -2,6 +2,8 @@ import { Agent } from "@mastra/core";
 import { createTool } from "@mastra/core/tools";
 import { z } from "zod";
 import { glm, gpt, qwen } from "../provider";
+import fs from "fs/promises";
+import path from "path";
 
 export const interactivePromptTool = createTool({
   id: "interactive_prompt",
@@ -51,12 +53,98 @@ export const interactivePromptTool = createTool({
 
       const fullOutput = await stream.getFullOutput();
 
+      // 记录交互内容到 JSON 文件
+      try {
+        const dataDir = path.join(__dirname, "../data");
+        await fs.mkdir(dataDir, { recursive: true });
+
+        const interactiveLogPath = path.join(dataDir, "Interactive.json");
+
+        // 创建日志条目
+        const logEntry = {
+          timestamp: new Date().toISOString(),
+          user_query,
+          mode,
+          prompt,
+          options: options || null,
+          result: fullOutput.text,
+          error: null,
+        };
+
+        // 读取现有日志或创建新的数组
+        let existingLogs = [];
+        try {
+          const existingData = await fs.readFile(interactiveLogPath, "utf8");
+          existingLogs = JSON.parse(existingData);
+        } catch (error) {
+          // 文件不存在或格式错误，使用空数组
+          existingLogs = [];
+        }
+
+        // 添加新的日志条目
+        existingLogs.push(logEntry);
+
+        // 保存更新后的日志
+        await fs.writeFile(
+          interactiveLogPath,
+          JSON.stringify(existingLogs, null, 2),
+          "utf8",
+        );
+
+        console.log("Interactive log saved to ../data/Interactive.json");
+      } catch (logError) {
+        console.error("Failed to save interactive log:", logError);
+      }
+
       return { result: fullOutput.text, error: null };
     } catch (error) {
       console.error("Error in interactive prompt tool:", error);
       const errorMessage =
         error instanceof Error ? error.message : "Unknown error";
       console.error("Error details:", errorMessage);
+
+      // 记录错误到 JSON 文件
+      try {
+        const dataDir = path.join(__dirname, "../data");
+        await fs.mkdir(dataDir, { recursive: true });
+
+        const interactiveLogPath = path.join(dataDir, "Interactive.json");
+
+        // 创建错误日志条目
+        const logEntry = {
+          timestamp: new Date().toISOString(),
+          user_query,
+          mode,
+          prompt,
+          options: options || null,
+          result: "",
+          error: errorMessage,
+        };
+
+        // 读取现有日志或创建新的数组
+        let existingLogs = [];
+        try {
+          const existingData = await fs.readFile(interactiveLogPath, "utf8");
+          existingLogs = JSON.parse(existingData);
+        } catch (logError) {
+          // 文件不存在或格式错误，使用空数组
+          existingLogs = [];
+        }
+
+        // 添加新的日志条目
+        existingLogs.push(logEntry);
+
+        // 保存更新后的日志
+        await fs.writeFile(
+          interactiveLogPath,
+          JSON.stringify(existingLogs, null, 2),
+          "utf8",
+        );
+
+        console.log("Interactive error log saved to ../data/Interactive.json");
+      } catch (logError) {
+        console.error("Failed to save interactive error log:", logError);
+      }
 
       return { result: "", error: errorMessage };
     }

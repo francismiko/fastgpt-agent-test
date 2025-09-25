@@ -10,11 +10,14 @@ import { dataScientistAgent } from "./agents/data-scientist";
 import { evaluationAgent } from "./agents/evaluation";
 import { productManagerAgent } from "./agents/product-manager";
 import { frontendDeveloperAgent } from "./agents/frontend-developer";
+import { agentWorkflow } from "./workflows/agent-workflow";
+import { replanAgent } from "./agents/replan";
 
 export const mastra = new Mastra({
-  workflows: {},
+  workflows: { agentWorkflow },
   agents: {
     planAgent,
+    replanAgent,
     masterAgent,
     researchAgent,
     sandboxAgent,
@@ -22,7 +25,7 @@ export const mastra = new Mastra({
     dataScientistAgent,
     evaluationAgent,
     productManagerAgent,
-    frontendDeveloperAgent
+    frontendDeveloperAgent,
   },
   storage: new LibSQLStore({
     url: ":memory:",

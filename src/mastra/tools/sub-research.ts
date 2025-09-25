@@ -27,7 +27,7 @@ export const researchAgentTool = createTool({
             content: query,
           },
         ],
-        { modelSettings: { temperature: 0 } },
+        { modelSettings: { temperature: 0.7 } },
       );
 
       for await (const chunk of stream.textStream) {

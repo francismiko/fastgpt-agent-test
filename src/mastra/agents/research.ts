@@ -1,6 +1,6 @@
 import { Agent } from "@mastra/core/agent";
 import { webSearchTool } from "../tools/web-search";
-import { glm } from "../provider";
+import { glm, qwen } from "../provider";
 import { webCrawlTool } from "../tools/web-crawl";
 import { Memory } from "@mastra/memory";
 import { LibSQLStore } from "@mastra/libsql";
